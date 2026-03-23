@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Download, Upload, Check, Clock, FileText, Calendar, User, Mail } from "lucide-react";
 import { toast } from "sonner";
 import AdminPageLayout from "@/components/admin/AdminPageLayout";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 import {
   useAdminReportRequests,
   useUpdateAdminReportRequestStatus,
@@ -18,7 +19,7 @@ const AdminReportRequests = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterPeriod, setFilterPeriod] = useState("all");
   const fileInputRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
-  const { data: reportRequests = [] } = useAdminReportRequests();
+  const { data: reportRequests = [], isLoading } = useAdminReportRequests();
   const updateStatusMutation = useUpdateAdminReportRequestStatus();
   const uploadReportMutation = useUploadAdminReportRequestFile();
 
@@ -149,6 +150,8 @@ const AdminReportRequests = () => {
 
   return (
     <AdminPageLayout title="Royalty Report Requests" subtitle="Manage user requests for monthly earnings reports">
+
+        {isLoading && <AdminPageLoader message="Loading report requests..." />}
 
         {/* Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">

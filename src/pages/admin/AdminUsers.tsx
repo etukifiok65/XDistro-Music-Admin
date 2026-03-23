@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Search, Download, Eye, Trash2, Mail, MapPin } from "lucide-react";
 import { toast } from "@/lib/toast";
 import AdminPageLayout from "@/components/admin/AdminPageLayout";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 import UserDetailsModal from "@/components/admin/UserDetailsModal";
 import { AdminUserListItem, SubscriptionPlanName } from "@/types/admin";
 import {
@@ -121,11 +122,7 @@ const AdminUsers = () => {
 
   return (
     <AdminPageLayout title="Users Management" subtitle="Manage all registered user accounts">
-      {isLoading && (
-        <Card className="mb-6">
-          <CardContent className="p-6 text-gray-600">Loading users...</CardContent>
-        </Card>
-      )}
+      {isLoading && <AdminPageLoader message="Loading users..." />}
 
         {/* Filters and Search */}
         <Card className="mb-6">

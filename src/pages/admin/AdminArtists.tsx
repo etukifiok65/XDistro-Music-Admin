@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Eye, Trash2, Music, MapPin, Building } from "lucide-react";
 import { toast } from "@/lib/toast";
 import AdminPageLayout from "@/components/admin/AdminPageLayout";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 import ArtistDetailsModal from "@/components/admin/ArtistDetailsModal";
 import { AdminArtist } from "@/types/admin";
 import {
@@ -96,11 +97,7 @@ const AdminArtists = () => {
   return (
     <AdminPageLayout title="Artists Management" subtitle="Manage all artists added by users to their accounts">
 
-        {isLoading && (
-          <Card className="mb-6">
-            <CardContent className="p-6 text-gray-600">Loading artists...</CardContent>
-          </Card>
-        )}
+        {isLoading && <AdminPageLoader message="Loading artists..." />}
 
         {/* Filters and Search */}
         <Card className="mb-6">

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Eye, Check, X, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import AdminPageLayout from "@/components/admin/AdminPageLayout";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 import PaymentDetailsModal from "@/components/admin/PaymentDetailsModal";
 import {
   useAdminRoyaltyRequests,
@@ -18,7 +19,7 @@ const AdminRoyaltyRequests = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [selectedRequest, setSelectedRequest] = useState<AdminRoyaltyRequest | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data: requests = [] } = useAdminRoyaltyRequests();
+  const { data: requests = [], isLoading } = useAdminRoyaltyRequests();
   const updateStatusMutation = useUpdateAdminRoyaltyRequestStatus();
 
   const filteredRequests = requests.filter(request => {
@@ -74,6 +75,8 @@ const AdminRoyaltyRequests = () => {
 
   return (
     <AdminPageLayout title="Royalty Withdrawal Requests" subtitle="Review and process royalty withdrawal requests">
+
+      {isLoading && <AdminPageLoader message="Loading royalty requests..." />}
 
         {/* Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">

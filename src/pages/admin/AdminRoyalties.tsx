@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Upload, Download, FileText, Check, AlertCircle, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import AdminPageLayout from "@/components/admin/AdminPageLayout";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 import {
   useAdminRoyaltyStats,
   useAdminRoyaltyUploadHistory,
@@ -13,10 +14,11 @@ import {
 
 const AdminRoyalties = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { data: royaltyStats } = useAdminRoyaltyStats();
-  const { data: uploadHistory = [] } = useAdminRoyaltyUploadHistory();
+  const { data: royaltyStats, isLoading: isStatsLoading } = useAdminRoyaltyStats();
+  const { data: uploadHistory = [], isLoading: isUploadHistoryLoading } = useAdminRoyaltyUploadHistory();
   const uploadRoyaltyFileMutation = useUploadAdminRoyaltyFile();
   const isProcessing = uploadRoyaltyFileMutation.isPending;
+  const isLoading = isStatsLoading || isUploadHistoryLoading;
 
   const handleFileUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -72,6 +74,8 @@ USRC17607841,Mike Wilson,Rock Anthem,12.45,USD,2024-02`;
 
   return (
     <AdminPageLayout title="Royalties Management" subtitle="Upload monthly royalty CSV files and manage distributions">
+
+        {isLoading && <AdminPageLoader message="Loading royalties data..." />}
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

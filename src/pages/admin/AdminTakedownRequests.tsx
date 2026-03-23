@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Check, AlertTriangle, Calendar, Mail, Clock } from "lucide-react";
 import { toast } from "sonner";
 import AdminPageLayout from "@/components/admin/AdminPageLayout";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 import {
   useAdminTakedownRequests,
   useUpdateAdminTakedownRequestStatus,
@@ -15,7 +16,7 @@ import { AdminTakedownRequestStatus } from "@/types/admin";
 const AdminTakedownRequests = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const { data: takedownRequests = [] } = useAdminTakedownRequests();
+  const { data: takedownRequests = [], isLoading } = useAdminTakedownRequests();
   const updateStatusMutation = useUpdateAdminTakedownRequestStatus();
 
   const filteredRequests = takedownRequests.filter(request => {
@@ -64,6 +65,8 @@ const AdminTakedownRequests = () => {
 
   return (
     <AdminPageLayout title="Takedown Requests" subtitle="Manage user requests to remove releases from distribution platforms">
+
+        {isLoading && <AdminPageLoader message="Loading takedown requests..." />}
 
         {/* Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">

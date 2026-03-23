@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight, Search, Eye, Check, X, Clock } from "lucide-react";
 import { toast } from "@/lib/toast";
 import AdminPageLayout from "@/components/admin/AdminPageLayout";
+import AdminPageLoader from "@/components/admin/AdminPageLoader";
 import ReleaseDetailsModal from "@/components/admin/ReleaseDetailsModal";
 import {
   useAdminReleases,
@@ -133,11 +134,7 @@ const AdminReleases = () => {
       title="Releases Management"
       subtitle="Review and manage all releases"
     >
-      {isLoading && (
-        <Card className="mb-6">
-          <CardContent className="p-6 text-gray-600">Loading releases...</CardContent>
-        </Card>
-      )}
+      {isLoading && <AdminPageLoader message="Loading releases..." />}
 
       <Card className="mb-6">
         <CardContent className="p-6">
