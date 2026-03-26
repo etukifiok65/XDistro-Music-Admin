@@ -7,7 +7,7 @@ import { Loader2, Mail, Lock, Shield, AlertCircle } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox"; 
 import { toast } from "@/lib/toast";
 import { useAuth } from "@/hooks/useAuth";
 import { prefetchAdminRoutes } from "@/config/adminRoutes";
