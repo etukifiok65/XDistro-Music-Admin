@@ -136,10 +136,7 @@ const ReleaseDetailsModal = ({
     audioFile: track.audioFile || `https://example.com/audio/${release.id}/${track.title.replace(/\s+/g, '_').toLowerCase()}.mp3`
   }));
 
-  const mockPlatforms = [
-    "Spotify", "Apple Music", "YouTube Music", "Amazon Music", 
-    "Deezer", "Tidal", "Pandora", "SoundCloud", "Bandcamp"
-  ];
+  const selectedPlatforms = release.distributionPlatforms ?? [];
 
   const generateUpc = () => {
     // Generate UPC code
@@ -754,14 +751,18 @@ const ReleaseDetailsModal = ({
                 <Globe className="w-5 h-5" />
                 Selected Distribution Platforms
               </h4>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                {mockPlatforms.map((platform, index) => (
-                  <div key={index} className="flex items-center gap-2 p-2 border rounded-lg">
-                    <Check className="w-4 h-4 text-green-600" />
-                    <span className="text-sm">{platform}</span>
-                  </div>
-                ))}
-              </div>
+              {selectedPlatforms.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {selectedPlatforms.map((platform, index) => (
+                    <div key={`${platform}-${index}`} className="flex items-center gap-2 p-2 border rounded-lg">
+                      <Check className="w-4 h-4 text-green-600" />
+                      <span className="text-sm">{platform}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">No distribution stores selected for this release.</p>
+              )}
             </CardContent>
           </Card>
 
