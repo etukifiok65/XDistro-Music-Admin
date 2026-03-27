@@ -1,7 +1,6 @@
-import { isAdminDummyAuthEnabled, adminBackendConfig } from "@/config/adminBackend";
+import { SubscriptionPlanName, AdminEntityId, AdminUserListItem } from "@/types/admin";
+import { isAdminDataDummyEnabled, requestAdminJson } from "@/services/adminClient";
 import { mockAdminUsers } from "@/data/adminUsers";
-import { getAdminToken } from "@/lib/adminSession";
-import { AdminUserListItem, SubscriptionPlanName } from "@/types/admin";
 
 const ADMIN_USERS_KEY = "admin:users";
 
@@ -28,63 +27,46 @@ const writeStoredUsers = (users: AdminUserListItem[]) => {
   localStorage.setItem(ADMIN_USERS_KEY, JSON.stringify(users));
 };
 
-const requestJson = async <T>(path: string, init?: RequestInit): Promise<T> => {
-  const response = await fetch(`${adminBackendConfig.apiBaseUrl}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(getAdminToken() ? { Authorization: `Bearer ${getAdminToken()}` } : {}),
-      ...(init?.headers || {}),
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Admin users request failed with status ${response.status}`);
-  }
-
-  return (await response.json()) as T;
-};
-
 export const getAdminUsers = async (): Promise<AdminUserListItem[]> => {
-  if (isAdminDummyAuthEnabled()) {
+  if (isAdminDataDummyEnabled()) {
     return readStoredUsers();
   }
 
-  const payload = await requestJson<{ data?: AdminUserListItem[]; users?: AdminUserListItem[] }>("/users");
+  const payload = await requestAdminJson<{ data?: AdminUserListItem[]; users?: AdminUserListItem[] }>("/users");
   return payload.data || payload.users || [];
 };
 
-export const deleteAdminUser = async (userId: number): Promise<void> => {
-  if (isAdminDummyAuthEnabled()) {
+export const deleteAdminUser = async (userId: AdminEntityId): Promise<void> => {
+  if (isAdminDataDummyEnabled()) {
     const users = readStoredUsers().filter((user) => user.id !== userId);
     writeStoredUsers(users);
     return;
   }
 
-  await requestJson(`/users/${userId}`, { method: "DELETE" });
+  await requestAdminJson(`/users/${userId}`, { method: "DELETE" });
 };
 
-export const updateAdminUserPlan = async (userId: number, plan: SubscriptionPlanName): Promise<void> => {
-  if (isAdminDummyAuthEnabled()) {
+export const updateAdminUserPlan = async (userId: AdminEntityId, plan: SubscriptionPlanName): Promise<void> => {
+  if (isAdminDataDummyEnabled()) {
     const users = readStoredUsers().map((user) => (user.id === userId ? { ...user, plan } : user));
     writeStoredUsers(users);
     return;
   }
 
-  await requestJson(`/users/${userId}/plan`, {
+  await requestAdminJson(`/users/${userId}/plan`, {
     method: "PATCH",
     body: JSON.stringify({ plan }),
   });
 };
 
-export const updateAdminUserStatus = async (userId: number, status: string): Promise<void> => {
-  if (isAdminDummyAuthEnabled()) {
+export const updateAdminUserStatus = async (userId: AdminEntityId, status: string): Promise<void> => {
+  if (isAdminDataDummyEnabled()) {
     const users = readStoredUsers().map((user) => (user.id === userId ? { ...user, status } : user));
     writeStoredUsers(users);
     return;
   }
 
-  await requestJson(`/users/${userId}/status`, {
+  await requestAdminJson(`/users/${userId}/status`, {
     method: "PATCH",
     body: JSON.stringify({ status }),
   });

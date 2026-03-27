@@ -8,7 +8,7 @@ import AdminPageLayout from "@/components/admin/AdminPageLayout";
 import AdminPageLoader from "@/components/admin/AdminPageLoader";
 import ActionConfirmationModal from "@/components/admin/ActionConfirmationModal";
 import UserDetailsModal from "@/components/admin/UserDetailsModal";
-import { AdminUserListItem, SubscriptionPlanName } from "@/types/admin";
+import { AdminEntityId, AdminUserListItem, SubscriptionPlanName } from "@/types/admin";
 import {
   useAdminUsers,
   useDeleteAdminUser,
@@ -21,7 +21,7 @@ const PLAN_OPTIONS: Array<"all" | SubscriptionPlanName> = ["all", "Non Subscribe
 const AdminUsers = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterPlan, setFilterPlan] = useState<"all" | SubscriptionPlanName>("all");
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<AdminEntityId | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<AdminUserListItem | null>(null);
 
@@ -75,7 +75,7 @@ const AdminUsers = () => {
     setUserToDelete(null);
   };
 
-  const handleStatusChange = async (userId: number, newStatus: string) => {
+  const handleStatusChange = async (userId: AdminEntityId, newStatus: string) => {
     await updateStatusMutation.mutateAsync({ userId, status: newStatus });
     
     const user = users.find(u => u.id === userId);
@@ -84,7 +84,7 @@ const AdminUsers = () => {
     }
   }; 
 
-  const handlePlanChange = async (userId: number, newPlan: SubscriptionPlanName) => {
+  const handlePlanChange = async (userId: AdminEntityId, newPlan: SubscriptionPlanName) => {
     await updatePlanMutation.mutateAsync({ userId, plan: newPlan });
     
     const user = users.find(u => u.id === userId);

@@ -12,7 +12,7 @@ import {
   useUpdateAdminReportRequestStatus,
   useUploadAdminReportRequestFile,
 } from "@/hooks/useAdminReportRequests";
-import { AdminReportRequestStatus } from "@/types/admin";
+import { AdminEntityId, AdminReportRequestStatus } from "@/types/admin";
 
 const AdminReportRequests = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -65,7 +65,7 @@ const AdminReportRequests = () => {
     }
   };
 
-  const handleFileUpload = async (requestId: number, event: ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (requestId: AdminEntityId, event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -88,7 +88,7 @@ const AdminReportRequests = () => {
     }
   };
 
-  const handleStatusUpdate = async (requestId: number, newStatus: AdminReportRequestStatus) => {
+  const handleStatusUpdate = async (requestId: AdminEntityId, newStatus: AdminReportRequestStatus) => {
     try {
       await updateStatusMutation.mutateAsync({ requestId, status: newStatus });
       const request = reportRequests.find((item) => item.id === requestId);

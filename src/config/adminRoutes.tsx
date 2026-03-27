@@ -1,11 +1,10 @@
-import { Home, Users, Music, UserRound, DollarSign, FileText, Settings, TriangleAlert as AlertTriangle } from "lucide-react";
+import { Home, Users, Music, UserRound, DollarSign, Settings, TriangleAlert as AlertTriangle } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { lazy, type ComponentType, type LazyExoticComponent } from "react";
 
 const AdminArtists = lazy(() => import("@/pages/admin/AdminArtists"));
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const AdminReleases = lazy(() => import("@/pages/admin/AdminReleases"));
-const AdminReportRequests = lazy(() => import("@/pages/admin/AdminReportRequests"));
 const AdminRoyalties = lazy(() => import("@/pages/admin/AdminRoyalties"));
 const AdminRoyaltyRequests = lazy(() => import("@/pages/admin/AdminRoyaltyRequests"));
 const AdminSettings = lazy(() => import("@/pages/admin/AdminSettings"));
@@ -72,14 +71,6 @@ export const adminProtectedRoutes: AdminRouteConfig[] = [
     showInPrimaryNav: true,
   },
   {
-    path: "/admin/report-requests",
-    title: "Report Requests",
-    label: "Reports",
-    icon: FileText,
-    component: AdminReportRequests,
-    showInPrimaryNav: true,
-  },
-  {
     path: "/admin/takedown-requests",
     title: "Takedown Requests",
     label: "Takedowns",
@@ -110,7 +101,6 @@ export const prefetchAdminRoutes = (): void => {
   void import("@/pages/admin/AdminArtists");
   void import("@/pages/admin/AdminRoyalties");
   void import("@/pages/admin/AdminRoyaltyRequests");
-  void import("@/pages/admin/AdminReportRequests");
   void import("@/pages/admin/AdminTakedownRequests");
   void import("@/pages/admin/AdminSettings");
 };

@@ -74,7 +74,9 @@ cp .env.example .env
 Use these values in `.env`:
 - `VITE_ADMIN_AUTH_MODE=dummy` for local demo data persisted in browser storage
 - `VITE_ADMIN_AUTH_MODE=rest` to use backend API endpoints
+- `VITE_ADMIN_DATA_MODE=rest` to keep dummy login while reading live admin data
 - `VITE_ADMIN_API_BASE_URL` to point to your admin API base path
+- `VITE_ADMIN_ROYALTY_IMPORT_URL` to point royalty uploads at the import endpoint
 
 4. Start the development server
 ```bash
@@ -132,6 +134,10 @@ Each admin domain follows a consistent vertical slice:
 Service behavior is controlled by `VITE_ADMIN_AUTH_MODE`:
 - `dummy`: localStorage-backed behavior for local development
 - `rest`: fetch-based API calls against `VITE_ADMIN_API_BASE_URL`
+
+Admin data behavior can be controlled independently with `VITE_ADMIN_DATA_MODE`:
+- `dummy`: keeps page data on localStorage-backed mock records
+- `rest`: fetches live admin data while allowing login to stay in dummy mode during setup
 
 This keeps page components thin, preserves local development speed, and makes backend integration incremental.
 

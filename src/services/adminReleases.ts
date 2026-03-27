@@ -1,6 +1,5 @@
-import { adminBackendConfig, isAdminDummyAuthEnabled } from "@/config/adminBackend";
+import { isAdminDataDummyEnabled, requestAdminJson } from "@/services/adminClient";
 import { mockAdminReleases } from "@/data/adminReleases";
-import { getAdminToken } from "@/lib/adminSession";
 import { AdminRelease, AdminReleaseStatus } from "@/types/admin";
 
 const ADMIN_RELEASES_KEY = "admin:releases";
@@ -28,37 +27,20 @@ const writeStoredReleases = (releases: AdminRelease[]) => {
   localStorage.setItem(ADMIN_RELEASES_KEY, JSON.stringify(releases));
 };
 
-const requestJson = async <T>(path: string, init?: RequestInit): Promise<T> => {
-  const response = await fetch(`${adminBackendConfig.apiBaseUrl}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(getAdminToken() ? { Authorization: `Bearer ${getAdminToken()}` } : {}),
-      ...(init?.headers || {}),
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Admin releases request failed with status ${response.status}`);
-  }
-
-  return (await response.json()) as T;
-};
-
 export const getAdminReleases = async (): Promise<AdminRelease[]> => {
-  if (isAdminDummyAuthEnabled()) {
+  if (isAdminDataDummyEnabled()) {
     return readStoredReleases();
   }
 
-  const payload = await requestJson<{ data?: AdminRelease[]; releases?: AdminRelease[] }>("/releases");
+  const payload = await requestAdminJson<{ data?: AdminRelease[]; releases?: AdminRelease[] }>("/releases");
   return payload.data || payload.releases || [];
 };
 
 export const updateAdminReleaseStatus = async (
-  releaseId: number,
+  releaseId: AdminRelease["id"],
   status: AdminReleaseStatus
 ): Promise<void> => {
-  if (isAdminDummyAuthEnabled()) {
+  if (isAdminDataDummyEnabled()) {
     const updated = readStoredReleases().map((release) =>
       release.id === releaseId ? { ...release, status } : release
     );
@@ -66,14 +48,14 @@ export const updateAdminReleaseStatus = async (
     return;
   }
 
-  await requestJson(`/releases/${releaseId}/status`, {
+  await requestAdminJson(`/releases/${releaseId}/status`, {
     method: "PATCH",
     body: JSON.stringify({ status }),
   });
 };
 
-export const updateAdminReleaseUpc = async (releaseId: number, upc: string): Promise<void> => {
-  if (isAdminDummyAuthEnabled()) {
+export const updateAdminReleaseUpc = async (releaseId: AdminRelease["id"], upc: string): Promise<void> => {
+  if (isAdminDataDummyEnabled()) {
     const updated = readStoredReleases().map((release) =>
       release.id === releaseId ? { ...release, upc } : release
     );
@@ -81,18 +63,18 @@ export const updateAdminReleaseUpc = async (releaseId: number, upc: string): Pro
     return;
   }
 
-  await requestJson(`/releases/${releaseId}/upc`, {
+  await requestAdminJson(`/releases/${releaseId}/upc`, {
     method: "PATCH",
     body: JSON.stringify({ upc }),
   });
 };
 
 export const updateAdminTrackIsrc = async (
-  releaseId: number,
-  trackId: number,
+  releaseId: AdminRelease["id"],
+  trackId: AdminRelease["trackList"][number]["id"],
   isrc: string
 ): Promise<void> => {
-  if (isAdminDummyAuthEnabled()) {
+  if (isAdminDataDummyEnabled()) {
     const updated = readStoredReleases().map((release) => {
       if (release.id !== releaseId) {
         return release;
@@ -110,7 +92,7 @@ export const updateAdminTrackIsrc = async (
     return;
   }
 
-  await requestJson(`/releases/${releaseId}/tracks/${trackId}/isrc`, {
+  await requestAdminJson(`/releases/${releaseId}/tracks/${trackId}/isrc`, {
     method: "PATCH",
     body: JSON.stringify({ isrc }),
   });

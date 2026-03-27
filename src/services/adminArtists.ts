@@ -1,6 +1,5 @@
-import { adminBackendConfig, isAdminDummyAuthEnabled } from "@/config/adminBackend";
+import { isAdminDataDummyEnabled, requestAdminJson } from "@/services/adminClient";
 import { mockAdminArtists } from "@/data/adminArtists";
-import { getAdminToken } from "@/lib/adminSession";
 import { AdminArtist } from "@/types/admin";
 
 const ADMIN_ARTISTS_KEY = "admin:artists";
@@ -28,44 +27,27 @@ const writeStoredArtists = (artists: AdminArtist[]) => {
   localStorage.setItem(ADMIN_ARTISTS_KEY, JSON.stringify(artists));
 };
 
-const requestJson = async <T>(path: string, init?: RequestInit): Promise<T> => {
-  const response = await fetch(`${adminBackendConfig.apiBaseUrl}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(getAdminToken() ? { Authorization: `Bearer ${getAdminToken()}` } : {}),
-      ...(init?.headers || {}),
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Admin artists request failed with status ${response.status}`);
-  }
-
-  return (await response.json()) as T;
-};
-
 export const getAdminArtists = async (): Promise<AdminArtist[]> => {
-  if (isAdminDummyAuthEnabled()) {
+  if (isAdminDataDummyEnabled()) {
     return readStoredArtists();
   }
 
-  const payload = await requestJson<{ data?: AdminArtist[]; artists?: AdminArtist[] }>("/artists");
+  const payload = await requestAdminJson<{ data?: AdminArtist[]; artists?: AdminArtist[] }>("/artists");
   return payload.data || payload.artists || [];
 };
 
-export const deleteAdminArtist = async (artistId: number): Promise<void> => {
-  if (isAdminDummyAuthEnabled()) {
+export const deleteAdminArtist = async (artistId: AdminArtist["id"]): Promise<void> => {
+  if (isAdminDataDummyEnabled()) {
     const updated = readStoredArtists().filter((artist) => artist.id !== artistId);
     writeStoredArtists(updated);
     return;
   }
 
-  await requestJson(`/artists/${artistId}`, { method: "DELETE" });
+  await requestAdminJson(`/artists/${artistId}`, { method: "DELETE" });
 };
 
 export const updateAdminArtist = async (updatedArtist: AdminArtist): Promise<void> => {
-  if (isAdminDummyAuthEnabled()) {
+  if (isAdminDataDummyEnabled()) {
     const updated = readStoredArtists().map((artist) =>
       artist.id === updatedArtist.id ? { ...artist, ...updatedArtist } : artist
     );
@@ -73,14 +55,14 @@ export const updateAdminArtist = async (updatedArtist: AdminArtist): Promise<voi
     return;
   }
 
-  await requestJson(`/artists/${updatedArtist.id}`, {
+  await requestAdminJson(`/artists/${updatedArtist.id}`, {
     method: "PATCH",
     body: JSON.stringify(updatedArtist),
   });
 };
 
-export const updateAdminArtistStatus = async (artistId: number, status: string): Promise<void> => {
-  if (isAdminDummyAuthEnabled()) {
+export const updateAdminArtistStatus = async (artistId: AdminArtist["id"], status: string): Promise<void> => {
+  if (isAdminDataDummyEnabled()) {
     const updated = readStoredArtists().map((artist) =>
       artist.id === artistId ? { ...artist, status } : artist
     );
@@ -88,7 +70,7 @@ export const updateAdminArtistStatus = async (artistId: number, status: string):
     return;
   }
 
-  await requestJson(`/artists/${artistId}/status`, {
+  await requestAdminJson(`/artists/${artistId}/status`, {
     method: "PATCH",
     body: JSON.stringify({ status }),
   });

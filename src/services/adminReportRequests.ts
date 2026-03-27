@@ -1,7 +1,7 @@
 import { adminBackendConfig, isAdminDummyAuthEnabled } from "@/config/adminBackend";
 import { mockAdminReportRequests } from "@/data/adminReportRequests";
 import { getAdminToken } from "@/lib/adminSession";
-import { AdminReportRequest, AdminReportRequestStatus } from "@/types/admin";
+import { AdminEntityId, AdminReportRequest, AdminReportRequestStatus } from "@/types/admin";
 
 const ADMIN_REPORT_REQUESTS_KEY = "admin:report-requests";
 
@@ -58,7 +58,7 @@ export const getAdminReportRequests = async (): Promise<AdminReportRequest[]> =>
 };
 
 export const updateAdminReportRequestStatus = async (
-  requestId: number,
+  requestId: AdminEntityId,
   status: AdminReportRequestStatus
 ): Promise<void> => {
   if (isAdminDummyAuthEnabled()) {
@@ -76,7 +76,7 @@ export const updateAdminReportRequestStatus = async (
 };
 
 export const uploadAdminReportRequestFile = async (
-  requestId: number,
+  requestId: AdminEntityId,
   fileName: string
 ): Promise<void> => {
   if (isAdminDummyAuthEnabled()) {

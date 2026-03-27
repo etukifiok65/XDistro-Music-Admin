@@ -15,7 +15,6 @@ const ADMIN_PERMISSIONS: AdminPermission[] = [
   "artists",
   "royalties",
   "royalty_requests",
-  "report_requests",
   "takedown_requests",
   "settings",
 ];

@@ -7,7 +7,6 @@ export type AdminPermission =
   | "artists"
   | "royalties"
   | "royalty_requests"
-  | "report_requests"
   | "takedown_requests"
   | "settings";
 
@@ -25,10 +24,12 @@ export interface AdminSession {
   user: AdminUser;
 }
 
+export type AdminEntityId = string | number;
+
 export type SubscriptionPlanName = "Non Subscriber" | "Artist" | "Pro" | "Label";
 
 export interface AdminUserListItem {
-  id: number;
+  id: AdminEntityId;
   firstName: string;
   lastName: string;
   email: string;
@@ -44,7 +45,7 @@ export interface AdminUserListItem {
 export type AdminReleaseStatus = "Submitted" | "Approved" | "Rejected" | "Denied" | "Deleted";
 
 export interface AdminReleaseTrack {
-  id: number;
+  id: AdminEntityId;
   title: string;
   duration: string;
   explicitContent?: boolean;
@@ -61,7 +62,7 @@ export interface AdminReleaseTrack {
 }
 
 export interface AdminRelease {
-  id: number;
+  id: AdminEntityId;
   title: string;
   artist: string;
   submittedBy: string;
@@ -80,7 +81,7 @@ export interface AdminRelease {
 }
 
 export interface AdminArtist {
-  id: number;
+  id: AdminEntityId;
   artistName: string;
   primaryGenre: string;
   artistBio: string;
@@ -111,7 +112,7 @@ export interface AdminRoyaltyPaymentMethod {
 }
 
 export interface AdminRoyaltyRequest {
-  id: number;
+  id: AdminEntityId;
   artistName: string;
   artistEmail: string;
   amount: number;
@@ -130,7 +131,7 @@ export interface AdminRoyaltyRequest {
 export type AdminReportRequestStatus = "Pending" | "Processing" | "Ready" | "Downloaded";
 
 export interface AdminReportRequest {
-  id: number;
+  id: AdminEntityId;
   artistName: string;
   artistEmail: string;
   reportPeriod: string;
@@ -148,7 +149,7 @@ export interface AdminReportRequest {
 export type AdminTakedownRequestStatus = "Pending" | "Completed";
 
 export interface AdminTakedownRequest {
-  id: number;
+  id: AdminEntityId;
   artistName: string;
   artistEmail: string;
   releaseTitle: string;

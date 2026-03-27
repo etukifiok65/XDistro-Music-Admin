@@ -14,7 +14,7 @@ import {
   useUpdateAdminReleaseUpc,
   useUpdateAdminTrackIsrc,
 } from "@/hooks/useAdminReleases";
-import { AdminRelease, AdminReleaseStatus } from "@/types/admin";
+import { AdminEntityId, AdminRelease, AdminReleaseStatus } from "@/types/admin";
 
 const RELEASE_STATUS_OPTIONS: Array<"all" | AdminReleaseStatus> = [
   "all",
@@ -30,7 +30,7 @@ const ITEMS_PER_PAGE = 1000;
 const AdminReleases = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | AdminReleaseStatus>("all");
-  const [selectedReleaseId, setSelectedReleaseId] = useState<number | null>(null);
+  const [selectedReleaseId, setSelectedReleaseId] = useState<AdminEntityId | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -105,16 +105,16 @@ const AdminReleases = () => {
     }
   };
 
-  const handleStatusUpdate = async (releaseId: number, newStatus: AdminReleaseStatus) => {
+  const handleStatusUpdate = async (releaseId: AdminEntityId, newStatus: AdminReleaseStatus) => {
     await updateStatusMutation.mutateAsync({ releaseId, status: newStatus });
     toast.success(`Release status updated to ${newStatus}`);
   };
 
-  const handleUpcUpdate = async (releaseId: number, upc: string) => {
+  const handleUpcUpdate = async (releaseId: AdminEntityId, upc: string) => {
     await updateUpcMutation.mutateAsync({ releaseId, upc });
   };
 
-  const handleTrackIsrcUpdate = async (releaseId: number, trackId: number, isrc: string) => {
+  const handleTrackIsrcUpdate = async (releaseId: AdminEntityId, trackId: AdminEntityId, isrc: string) => {
     await updateIsrcMutation.mutateAsync({ releaseId, trackId, isrc });
     toast.success("ISRC code updated for track");
   };

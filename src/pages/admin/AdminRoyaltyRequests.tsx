@@ -12,7 +12,7 @@ import {
   useAdminRoyaltyRequests,
   useUpdateAdminRoyaltyRequestStatus,
 } from "@/hooks/useAdminRoyaltyRequests";
-import { AdminRoyaltyRequest, AdminRoyaltyRequestStatus } from "@/types/admin";
+import { AdminEntityId, AdminRoyaltyRequest, AdminRoyaltyRequestStatus } from "@/types/admin";
 
 const AdminRoyaltyRequests = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -47,7 +47,7 @@ const AdminRoyaltyRequests = () => {
     }
   };
 
-  const updateRequestStatus = async (requestId: number, newStatus: AdminRoyaltyRequestStatus) => {
+  const updateRequestStatus = async (requestId: AdminEntityId, newStatus: AdminRoyaltyRequestStatus) => {
     try {
       await updateStatusMutation.mutateAsync({ requestId, status: newStatus });
       const request = requests.find((item) => item.id === requestId);

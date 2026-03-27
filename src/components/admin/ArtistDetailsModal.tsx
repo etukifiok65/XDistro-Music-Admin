@@ -13,7 +13,7 @@ interface ArtistDetailsModalProps {
   artist: AdminArtist | null;
   isOpen: boolean;
   onClose: () => void;
-  onStatusUpdate?: (artistId: number, newStatus: string) => void;
+  onStatusUpdate?: (artistId: AdminArtist["id"], newStatus: string) => void;
   onSaveArtist?: (artist: AdminArtist) => Promise<void> | void;
 }
 

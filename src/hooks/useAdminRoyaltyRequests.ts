@@ -3,7 +3,7 @@ import {
   getAdminRoyaltyRequests,
   updateAdminRoyaltyRequestStatus,
 } from "@/services/adminRoyaltyRequests";
-import { AdminRoyaltyRequestStatus } from "@/types/admin";
+import { AdminEntityId, AdminRoyaltyRequestStatus } from "@/types/admin";
 
 const adminRoyaltyRequestsQueryKey = ["admin", "royalty-requests"] as const;
 
@@ -19,7 +19,7 @@ export const useUpdateAdminRoyaltyRequestStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ requestId, status }: { requestId: number; status: AdminRoyaltyRequestStatus }) =>
+    mutationFn: ({ requestId, status }: { requestId: AdminEntityId; status: AdminRoyaltyRequestStatus }) =>
       updateAdminRoyaltyRequestStatus(requestId, status),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: adminRoyaltyRequestsQueryKey });

@@ -16,7 +16,7 @@ interface UserDetailsModalProps {
   user: AdminUserListItem | null;
   isOpen: boolean;
   onClose: () => void;
-  onStatusUpdate?: (userId: number, newStatus: string) => void;
+  onStatusUpdate?: (userId: AdminUserListItem["id"], newStatus: string) => void;
 }
 
 const UserDetailsModal = ({ user, isOpen, onClose, onStatusUpdate }: UserDetailsModalProps) => {

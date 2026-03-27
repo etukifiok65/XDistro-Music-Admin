@@ -4,7 +4,7 @@ import {
   updateAdminReportRequestStatus,
   uploadAdminReportRequestFile,
 } from "@/services/adminReportRequests";
-import { AdminReportRequestStatus } from "@/types/admin";
+import { AdminEntityId, AdminReportRequestStatus } from "@/types/admin";
 
 const adminReportRequestsQueryKey = ["admin", "report-requests"] as const;
 
@@ -20,7 +20,7 @@ export const useUpdateAdminReportRequestStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ requestId, status }: { requestId: number; status: AdminReportRequestStatus }) =>
+    mutationFn: ({ requestId, status }: { requestId: AdminEntityId; status: AdminReportRequestStatus }) =>
       updateAdminReportRequestStatus(requestId, status),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: adminReportRequestsQueryKey });
@@ -32,7 +32,7 @@ export const useUploadAdminReportRequestFile = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ requestId, fileName }: { requestId: number; fileName: string }) =>
+    mutationFn: ({ requestId, fileName }: { requestId: AdminEntityId; fileName: string }) =>
       uploadAdminReportRequestFile(requestId, fileName),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: adminReportRequestsQueryKey });

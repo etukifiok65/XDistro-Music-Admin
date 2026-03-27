@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 
 interface Track {
-  id: number;
+  id: string | number;
   title: string;
   duration: string;
   explicitContent?: boolean;
@@ -42,7 +42,7 @@ interface Track {
 }
 
 interface Release {
-  id: number;
+  id: string | number;
   title: string;
   artist: string;
   additionalPrimaryArtist?: string;
@@ -68,10 +68,10 @@ interface ReleaseDetailsModalProps {
   release: Release | null;
   isOpen: boolean;
   onClose: () => void;
-  onStatusUpdate?: (releaseId: number, newStatus: string) => void;
-  onUpcUpdate?: (releaseId: number, upc: string) => void;
-  onIsrcUpdate?: (releaseId: number, trackId: number, isrc: string) => void;
-  onTikTokPreviewUpdate?: (releaseId: number, trackId: number, minutes: number, seconds: number) => void;
+  onStatusUpdate?: (releaseId: string | number, newStatus: string) => void;
+  onUpcUpdate?: (releaseId: string | number, upc: string) => void;
+  onIsrcUpdate?: (releaseId: string | number, trackId: string | number, isrc: string) => void;
+  onTikTokPreviewUpdate?: (releaseId: string | number, trackId: string | number, minutes: number, seconds: number) => void;
 }
 
 const ReleaseDetailsModal = ({ 
@@ -84,11 +84,11 @@ const ReleaseDetailsModal = ({
   onTikTokPreviewUpdate
 }: ReleaseDetailsModalProps) => {
   const [editingUpc, setEditingUpc] = useState(false);
-  const [editingIsrc, setEditingIsrc] = useState<number | null>(null);
-  const [editingTikTokPreview, setEditingTikTokPreview] = useState<number | null>(null);
+  const [editingIsrc, setEditingIsrc] = useState<string | number | null>(null);
+  const [editingTikTokPreview, setEditingTikTokPreview] = useState<string | number | null>(null);
   const [upcValue, setUpcValue] = useState("");
-  const [isrcValues, setIsrcValues] = useState<{ [key: number]: string }>({});
-  const [tiktokPreviewValues, setTiktokPreviewValues] = useState<{ [key: number]: { minutes: number; seconds: number } }>({});
+  const [isrcValues, setIsrcValues] = useState<Record<string, string>>({});
+  const [tiktokPreviewValues, setTiktokPreviewValues] = useState<Record<string, { minutes: number; seconds: number }>>({});
   const [isDownloading, setIsDownloading] = useState(false);
 
   if (!release) return null;
@@ -174,8 +174,8 @@ const ReleaseDetailsModal = ({
     }    
   };
   
-  const handleIsrcSave = (trackId: number) => {
-    const isrcValue = isrcValues[trackId];
+  const handleIsrcSave = (trackId: string | number) => {
+    const isrcValue = isrcValues[String(trackId)];
     if (isrcValue && isrcValue.length === 12) {
       onIsrcUpdate?.(release.id, trackId, isrcValue);
       setEditingIsrc(null);
@@ -190,13 +190,13 @@ const ReleaseDetailsModal = ({
     setEditingUpc(true);
   };
 
-  const handleIsrcEdit = (trackId: number, currentIsrc: string) => {
-    setIsrcValues({ ...isrcValues, [trackId]: currentIsrc });
+  const handleIsrcEdit = (trackId: string | number, currentIsrc: string) => {
+    setIsrcValues({ ...isrcValues, [String(trackId)]: currentIsrc });
     setEditingIsrc(trackId);
   };
 
-  const handleTikTokPreviewSave = (trackId: number) => {
-    const previewValue = tiktokPreviewValues[trackId];
+  const handleTikTokPreviewSave = (trackId: string | number) => {
+    const previewValue = tiktokPreviewValues[String(trackId)];
     if (previewValue && previewValue.seconds >= 0 && previewValue.seconds < 60 && previewValue.minutes >= 0) {
       onTikTokPreviewUpdate?.(release.id, trackId, previewValue.minutes, previewValue.seconds);
       setEditingTikTokPreview(null);
@@ -206,10 +206,10 @@ const ReleaseDetailsModal = ({
     }
   };
 
-  const handleTikTokPreviewEdit = (trackId: number, currentMinutes: number = 0, currentSeconds: number = 30) => {
+  const handleTikTokPreviewEdit = (trackId: string | number, currentMinutes: number = 0, currentSeconds: number = 30) => {
     setTiktokPreviewValues({ 
       ...tiktokPreviewValues, 
-      [trackId]: { minutes: currentMinutes, seconds: currentSeconds } 
+      [String(trackId)]: { minutes: currentMinutes, seconds: currentSeconds } 
     });
     setEditingTikTokPreview(trackId);
   };
@@ -223,9 +223,9 @@ const ReleaseDetailsModal = ({
     setUpcValue(newUpc);
   };
 
-  const handleGenerateIsrc = (trackId: number) => {
+  const handleGenerateIsrc = (trackId: string | number) => {
     const newIsrc = generateIsrc();
-    setIsrcValues({ ...isrcValues, [trackId]: newIsrc });
+    setIsrcValues({ ...isrcValues, [String(trackId)]: newIsrc });
   };
 
   const getTotalDuration = () => {

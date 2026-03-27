@@ -1,6 +1,5 @@
-import { adminBackendConfig, isAdminDummyAuthEnabled } from "@/config/adminBackend";
+import { isAdminDataDummyEnabled, requestAdminJson } from "@/services/adminClient";
 import { mockAdminTakedownRequests } from "@/data/adminTakedownRequests";
-import { getAdminToken } from "@/lib/adminSession";
 import { AdminTakedownRequest, AdminTakedownRequestStatus } from "@/types/admin";
 
 const ADMIN_TAKEDOWN_REQUESTS_KEY = "admin:takedown-requests";
@@ -28,29 +27,12 @@ const writeStoredTakedownRequests = (requests: AdminTakedownRequest[]) => {
   localStorage.setItem(ADMIN_TAKEDOWN_REQUESTS_KEY, JSON.stringify(requests));
 };
 
-const requestJson = async <T>(path: string, init?: RequestInit): Promise<T> => {
-  const response = await fetch(`${adminBackendConfig.apiBaseUrl}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(getAdminToken() ? { Authorization: `Bearer ${getAdminToken()}` } : {}),
-      ...(init?.headers || {}),
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Admin takedown requests request failed with status ${response.status}`);
-  }
-
-  return (await response.json()) as T;
-};
-
 export const getAdminTakedownRequests = async (): Promise<AdminTakedownRequest[]> => {
-  if (isAdminDummyAuthEnabled()) {
+  if (isAdminDataDummyEnabled()) {
     return readStoredTakedownRequests();
   }
 
-  const payload = await requestJson<{ data?: AdminTakedownRequest[]; requests?: AdminTakedownRequest[] }>(
+  const payload = await requestAdminJson<{ data?: AdminTakedownRequest[]; requests?: AdminTakedownRequest[] }>(
     "/takedown-requests"
   );
 
@@ -58,10 +40,10 @@ export const getAdminTakedownRequests = async (): Promise<AdminTakedownRequest[]
 };
 
 export const updateAdminTakedownRequestStatus = async (
-  requestId: number,
+  requestId: AdminTakedownRequest["id"],
   status: AdminTakedownRequestStatus
 ): Promise<void> => {
-  if (isAdminDummyAuthEnabled()) {
+  if (isAdminDataDummyEnabled()) {
     const updated = readStoredTakedownRequests().map((request) =>
       request.id === requestId ? { ...request, status } : request
     );
@@ -70,7 +52,7 @@ export const updateAdminTakedownRequestStatus = async (
     return;
   }
 
-  await requestJson(`/takedown-requests/${requestId}/status`, {
+  await requestAdminJson(`/takedown-requests/${requestId}/status`, {
     method: "PATCH",
     body: JSON.stringify({ status }),
   });

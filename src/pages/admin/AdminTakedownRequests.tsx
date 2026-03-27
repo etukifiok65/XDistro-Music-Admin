@@ -11,7 +11,7 @@ import {
   useAdminTakedownRequests,
   useUpdateAdminTakedownRequestStatus,
 } from "@/hooks/useAdminTakedownRequests";
-import { AdminTakedownRequestStatus } from "@/types/admin";
+import { AdminEntityId, AdminTakedownRequestStatus } from "@/types/admin";
 
 const AdminTakedownRequests = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,7 +53,7 @@ const AdminTakedownRequests = () => {
     }
   };
 
-  const handleStatusUpdate = async (requestId: number, newStatus: AdminTakedownRequestStatus) => {
+  const handleStatusUpdate = async (requestId: AdminEntityId, newStatus: AdminTakedownRequestStatus) => {
     try {
       await updateStatusMutation.mutateAsync({ requestId, status: newStatus });
       const request = takedownRequests.find((item) => item.id === requestId);

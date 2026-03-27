@@ -9,7 +9,7 @@ import AdminPageLayout from "@/components/admin/AdminPageLayout";
 import AdminPageLoader from "@/components/admin/AdminPageLoader";
 import ActionConfirmationModal from "@/components/admin/ActionConfirmationModal";
 import ArtistDetailsModal from "@/components/admin/ArtistDetailsModal";
-import { AdminArtist } from "@/types/admin";
+import { AdminArtist, AdminEntityId } from "@/types/admin";
 import {
   useAdminArtists,
   useDeleteAdminArtist,
@@ -21,7 +21,7 @@ const AdminArtists = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterGenre, setFilterGenre] = useState("all");
   const [filterCountry, setFilterCountry] = useState("all");
-  const [selectedArtistId, setSelectedArtistId] = useState<number | null>(null);
+  const [selectedArtistId, setSelectedArtistId] = useState<AdminEntityId | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [artistToDelete, setArtistToDelete] = useState<AdminArtist | null>(null);
 
@@ -80,7 +80,7 @@ const AdminArtists = () => {
     setArtistToDelete(null);
   };
 
-  const handleStatusChange = async (artistId: number, newStatus: string) => {
+  const handleStatusChange = async (artistId: AdminEntityId, newStatus: string) => {
     await updateArtistStatusMutation.mutateAsync({ artistId, status: newStatus });
     
     const artist = artists.find(a => a.id === artistId);

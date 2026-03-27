@@ -4,15 +4,29 @@ const getEnvValue = (key: string): string | undefined => {
 };
 
 export type AdminAuthMode = "dummy" | "rest";
+export type AdminDataMode = "dummy" | "rest";
 
 const resolveAuthMode = (): AdminAuthMode => {
   return getEnvValue("VITE_ADMIN_AUTH_MODE") === "rest" ? "rest" : "dummy";
 };
 
+const resolveDataMode = (): AdminDataMode => {
+  const explicitMode = getEnvValue("VITE_ADMIN_DATA_MODE");
+  if (explicitMode === "rest") {
+    return "rest";
+  }
+  if (explicitMode === "dummy") {
+    return "dummy";
+  }
+  return resolveAuthMode();
+};
+
 export const adminBackendConfig = {
   authMode: resolveAuthMode(),
+  dataMode: resolveDataMode(),
   apiBaseUrl: getEnvValue("VITE_ADMIN_API_BASE_URL") || "/api/admin",
   royaltyImportUrl: getEnvValue("VITE_ADMIN_ROYALTY_IMPORT_URL") || "",
 };
 
 export const isAdminDummyAuthEnabled = (): boolean => adminBackendConfig.authMode === "dummy";
+export const isAdminDummyDataEnabled = (): boolean => adminBackendConfig.dataMode === "dummy";

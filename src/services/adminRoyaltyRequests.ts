@@ -1,6 +1,5 @@
-import { adminBackendConfig, isAdminDummyAuthEnabled } from "@/config/adminBackend";
+import { isAdminDataDummyEnabled, requestAdminJson } from "@/services/adminClient";
 import { mockAdminRoyaltyRequests } from "@/data/adminRoyaltyRequests";
-import { getAdminToken } from "@/lib/adminSession";
 import { AdminRoyaltyRequest, AdminRoyaltyRequestStatus } from "@/types/admin";
 
 const ADMIN_ROYALTY_REQUESTS_KEY = "admin:royalty-requests";
@@ -28,29 +27,12 @@ const writeStoredRoyaltyRequests = (requests: AdminRoyaltyRequest[]) => {
   localStorage.setItem(ADMIN_ROYALTY_REQUESTS_KEY, JSON.stringify(requests));
 };
 
-const requestJson = async <T>(path: string, init?: RequestInit): Promise<T> => {
-  const response = await fetch(`${adminBackendConfig.apiBaseUrl}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(getAdminToken() ? { Authorization: `Bearer ${getAdminToken()}` } : {}),
-      ...(init?.headers || {}),
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Admin royalty requests request failed with status ${response.status}`);
-  }
-
-  return (await response.json()) as T;
-};
-
 export const getAdminRoyaltyRequests = async (): Promise<AdminRoyaltyRequest[]> => {
-  if (isAdminDummyAuthEnabled()) {
+  if (isAdminDataDummyEnabled()) {
     return readStoredRoyaltyRequests();
   }
 
-  const payload = await requestJson<{ data?: AdminRoyaltyRequest[]; requests?: AdminRoyaltyRequest[] }>(
+  const payload = await requestAdminJson<{ data?: AdminRoyaltyRequest[]; requests?: AdminRoyaltyRequest[] }>(
     "/royalty-requests"
   );
 
@@ -58,10 +40,10 @@ export const getAdminRoyaltyRequests = async (): Promise<AdminRoyaltyRequest[]> 
 };
 
 export const updateAdminRoyaltyRequestStatus = async (
-  requestId: number,
+  requestId: AdminRoyaltyRequest["id"],
   status: AdminRoyaltyRequestStatus
 ): Promise<void> => {
-  if (isAdminDummyAuthEnabled()) {
+  if (isAdminDataDummyEnabled()) {
     const updated = readStoredRoyaltyRequests().map((request) =>
       request.id === requestId ? { ...request, status } : request
     );
@@ -69,7 +51,7 @@ export const updateAdminRoyaltyRequestStatus = async (
     return;
   }
 
-  await requestJson(`/royalty-requests/${requestId}/status`, {
+  await requestAdminJson(`/royalty-requests/${requestId}/status`, {
     method: "PATCH",
     body: JSON.stringify({ status }),
   });

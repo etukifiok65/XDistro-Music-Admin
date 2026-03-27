@@ -1,7 +1,8 @@
-import { adminBackendConfig, isAdminDummyAuthEnabled } from "@/config/adminBackend";
+import { adminBackendConfig } from "@/config/adminBackend";
 import { mockAdminRoyaltyStats, mockAdminRoyaltyUploadHistory } from "@/data/adminRoyalties";
 import { getAdminToken } from "@/lib/adminSession";
 import { AdminRoyaltyStats, AdminRoyaltyUploadHistoryItem, AdminRoyaltyUploadInput } from "@/types/admin";
+import { isAdminDataDummyEnabled, requestAdminJson } from "@/services/adminClient";
 
 const ADMIN_ROYALTY_HISTORY_KEY = "admin:royalty-upload-history";
 const ADMIN_ROYALTY_STATS_KEY = "admin:royalty-stats";
@@ -157,25 +158,8 @@ const requestRoyaltyImport = async <T>(mode?: string, init?: RequestInit): Promi
   return (await response.json()) as T;
 };
 
-const requestJson = async <T>(path: string, init?: RequestInit): Promise<T> => {
-  const response = await fetch(`${adminBackendConfig.apiBaseUrl}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(getAdminToken() ? { Authorization: `Bearer ${getAdminToken()}` } : {}),
-      ...(init?.headers || {}),
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Admin royalties request failed with status ${response.status}`);
-  }
-
-  return (await response.json()) as T;
-};
-
 export const getAdminRoyaltyStats = async (): Promise<AdminRoyaltyStats> => {
-  if (isAdminDummyAuthEnabled()) {
+  if (isAdminDataDummyEnabled()) {
     return readStoredRoyaltyStats();
   }
 
@@ -189,7 +173,7 @@ export const getAdminRoyaltyStats = async (): Promise<AdminRoyaltyStats> => {
 };
 
 export const getAdminRoyaltyUploadHistory = async (): Promise<AdminRoyaltyUploadHistoryItem[]> => {
-  if (isAdminDummyAuthEnabled()) {
+  if (isAdminDataDummyEnabled()) {
     return readStoredRoyaltyHistory();
   }
 
@@ -209,7 +193,7 @@ export const getAdminRoyaltyUploadHistory = async (): Promise<AdminRoyaltyUpload
 export const uploadAdminRoyaltyFile = async (
   input: AdminRoyaltyUploadInput
 ): Promise<AdminRoyaltyUploadHistoryItem> => {
-  if (isAdminDummyAuthEnabled()) {
+  if (isAdminDataDummyEnabled()) {
     const history = readStoredRoyaltyHistory();
     const newUpload = await buildUploadFromCsv(input);
 

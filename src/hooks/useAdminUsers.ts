@@ -5,7 +5,7 @@ import {
   updateAdminUserPlan,
   updateAdminUserStatus,
 } from "@/services/adminUsers";
-import { SubscriptionPlanName } from "@/types/admin";
+import { AdminEntityId, SubscriptionPlanName } from "@/types/admin";
 
 const adminUsersQueryKey = ["admin", "users"] as const;
 
@@ -21,7 +21,7 @@ export const useDeleteAdminUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (userId: number) => deleteAdminUser(userId),
+    mutationFn: (userId: AdminEntityId) => deleteAdminUser(userId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: adminUsersQueryKey });
     },
@@ -32,7 +32,7 @@ export const useUpdateAdminUserPlan = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ userId, plan }: { userId: number; plan: SubscriptionPlanName }) =>
+    mutationFn: ({ userId, plan }: { userId: AdminEntityId; plan: SubscriptionPlanName }) =>
       updateAdminUserPlan(userId, plan),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: adminUsersQueryKey });
@@ -44,7 +44,7 @@ export const useUpdateAdminUserStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ userId, status }: { userId: number; status: string }) =>
+    mutationFn: ({ userId, status }: { userId: AdminEntityId; status: string }) =>
       updateAdminUserStatus(userId, status),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: adminUsersQueryKey });

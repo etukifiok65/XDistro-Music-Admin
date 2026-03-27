@@ -10,7 +10,7 @@ interface PaymentDetailsModalProps {
   request: AdminRoyaltyRequest | null;
   isOpen: boolean;
   onClose: () => void;
-  onStatusUpdate?: (requestId: number, newStatus: AdminRoyaltyRequestStatus) => void;
+  onStatusUpdate?: (requestId: AdminRoyaltyRequest["id"], newStatus: AdminRoyaltyRequestStatus) => void;
 }
 
 const PaymentDetailsModal = ({ request, isOpen, onClose, onStatusUpdate }: PaymentDetailsModalProps) => {

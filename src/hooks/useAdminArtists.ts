@@ -5,7 +5,7 @@ import {
   updateAdminArtist,
   updateAdminArtistStatus,
 } from "@/services/adminArtists";
-import { AdminArtist } from "@/types/admin";
+import { AdminArtist, AdminEntityId } from "@/types/admin";
 
 const adminArtistsQueryKey = ["admin", "artists"] as const;
 
@@ -21,7 +21,7 @@ export const useDeleteAdminArtist = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (artistId: number) => deleteAdminArtist(artistId),
+    mutationFn: (artistId: AdminEntityId) => deleteAdminArtist(artistId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: adminArtistsQueryKey });
     },
@@ -43,7 +43,7 @@ export const useUpdateAdminArtistStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ artistId, status }: { artistId: number; status: string }) =>
+    mutationFn: ({ artistId, status }: { artistId: AdminEntityId; status: string }) =>
       updateAdminArtistStatus(artistId, status),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: adminArtistsQueryKey });
