@@ -559,7 +559,7 @@ const AdminSettings = () => {
                                 className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                                 title="Edit Staff Member"
                               >
-                                <Edit className="w-4 h-4" />
+                                <Pencil className="w-4 h-4" />
                               </Button>
                               {member.role !== 'Super Admin' && (
                                 <Button 
