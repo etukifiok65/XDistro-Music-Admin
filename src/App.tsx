@@ -9,7 +9,8 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
-import { adminProtectedRoutes, getAdminPageTitle } from "@/config/adminRoutes";
+import { adminProtectedRoutes, getAdminPageTitle, prefetchAdminRoutes } from "@/config/adminRoutes";
+import { useAuth } from "@/hooks/useAuth";
 
 const AdminDocumentTitle = () => {
   const location = useLocation();
@@ -17,6 +18,20 @@ const AdminDocumentTitle = () => {
   useEffect(() => {
     document.title = getAdminPageTitle(location.pathname);
   }, [location.pathname]);
+
+  return null;
+};
+
+const AdminRouteChunkPrefetcher = () => {
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    prefetchAdminRoutes();
+  }, [user]);
 
   return null;
 };
@@ -29,6 +44,7 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <AdminDocumentTitle />
+          <AdminRouteChunkPrefetcher />
           <ScrollToTop />
           <Routes>
             <Route path="/" element={<Navigate to="/admin" replace />} />
