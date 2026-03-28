@@ -1,29 +1,112 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Music, DollarSign, UserCheck, TrendingUp, Calendar, AlertTriangle } from "lucide-react";
 import AdminPageLayout from "@/components/admin/AdminPageLayout";
+import { useAdminUsers } from "@/hooks/useAdminUsers";
+import { useAdminReleases } from "@/hooks/useAdminReleases";
+import { useAdminRoyaltyRequests } from "@/hooks/useAdminRoyaltyRequests";
+import { useAdminTakedownRequests } from "@/hooks/useAdminTakedownRequests";
 
 const AdminDashboard = () => {
-  // Mock data - in real app this would come from API
-  const [stats] = useState({
-    totalUsers: 12547,
-    activeSubscribers: 8932,
-    totalReleases: 45678,
-    pendingReleases: 234,
-    monthlyRevenue: 89432,
-    royaltyRequests: 67,
-    takedownRequests: 12
-  });
+  const { data: usersData, isLoading: usersLoading } = useAdminUsers();
+  const { data: releasesData, isLoading: releasesLoading } = useAdminReleases();
+  const { data: royaltyRequestsData, isLoading: royaltyLoading } = useAdminRoyaltyRequests();
+  const { data: takedownRequestsData, isLoading: takedownLoading } = useAdminTakedownRequests();
 
-  const [recentActivity] = useState([
-    { id: 1, type: "takedown", message: "New takedown request: 'Summer Vibes' by John Doe", time: "5 minutes ago" },
-    { id: 2, type: "release", message: "New release submitted by john.doe@email.com", time: "15 minutes ago" },
-    { id: 3, type: "user", message: "New user registration: jane.smith@email.com", time: "25 minutes ago" },
-    { id: 4, type: "royalty", message: "Royalty withdrawal request: $245.67", time: "1 hour ago" },
-    { id: 5, type: "release", message: "Release approved: 'Summer Vibes' by John Doe", time: "2 hours ago" },
-    { id: 6, type: "user", message: "User upgraded to Pro plan: mike.wilson@email.com", time: "3 hours ago" }
-  ]);
+  // Build stats from actual data
+  const stats = useMemo(() => {
+    const users = usersData || [];
+    const releases = releasesData || [];
+    const royaltyRequests = royaltyRequestsData || [];
+    const takedownRequests = takedownRequestsData || [];
+
+    const activeSubscribers = users.filter((u: any) => u.plan !== "Non Subscriber").length;
+    const pendingReleases = releases.filter((r: any) => r.status === "Submitted").length;
+    const pendingRoyaltyRequests = royaltyRequests.filter((r: any) => r.status === "Pending").length;
+    const totalAmountRequested = royaltyRequests.reduce((sum: number, r: any) => sum + r.amount, 0);
+
+    return {
+      totalUsers: users.length,
+      activeSubscribers,
+      totalReleases: releases.length,
+      pendingReleases,
+      monthlyRevenue: totalAmountRequested,
+      royaltyRequests: pendingRoyaltyRequests,
+      takedownRequests: takedownRequests.length
+    };
+  }, [usersData, releasesData, royaltyRequestsData, takedownRequestsData]);
+
+  // Build recent activity from actual data
+  const recentActivity = useMemo(() => {
+    const activities: any[] = [];
+
+    // Add recent users
+    const users = usersData || [];
+    users.slice(0, 2).forEach((user: any) => {
+      activities.push({
+        id: `user-${user.id}`,
+        type: "user",
+        message: `New user: ${user.firstName} ${user.lastName} (${user.email})`,
+        time: user.joinDate
+      });
+    });
+
+    // Add recent releases
+    const releases = releasesData || [];
+    releases.slice(0, 2).forEach((release: any) => {
+      activities.push({
+        id: `release-${release.id}`,
+        type: "release",
+        message: `${release.status === "Submitted" ? "New release" : "Release"} submitted: "${release.title}" by ${release.artist}`,
+        time: release.submissionDate
+      });
+    });
+
+    // Add recent royalty requests
+    const royaltyRequests = royaltyRequestsData || [];
+    royaltyRequests.slice(0, 2).forEach((request: any) => {
+      activities.push({
+        id: `royalty-${request.id}`,
+        type: "royalty",
+        message: `Royalty request: $${request.amount.toFixed(2)} from ${request.artistName}`,
+        time: request.requestDate
+      });
+    });
+
+    // Add recent takedown requests
+    const takedownRequests = takedownRequestsData || [];
+    takedownRequests.slice(0, 1).forEach((request: any) => {
+      activities.push({
+        id: `takedown-${request.id}`,
+        type: "takedown",
+        message: `Takedown request: "${request.releaseTitle}" by ${request.artistName}`,
+        time: request.requestDate
+      });
+    });
+
+    // Sort by time (newest first) and limit to 6
+    return activities.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 6);
+  }, [usersData, releasesData, royaltyRequestsData, takedownRequestsData]);
+
+  const formatTime = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+
+      if (diffMins < 1) return "just now";
+      if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? "s" : ""} ago`;
+      if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+      if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+      return date.toLocaleDateString();
+    } catch {
+      return dateString;
+    }
+  };
 
   const StatCard = ({ title, value, icon, trend, trendValue }: {
     title: string;
@@ -123,20 +206,24 @@ const AdminDashboard = () => {
           <CardContent className="p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
             <div className="space-y-4">
-              {recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg">
-                  <div className={`w-2 h-2 rounded-full mt-2 ${
-                    activity.type === 'release' ? 'bg-onerpm-purple' :
-                    activity.type === 'user' ? 'bg-onerpm-blue' :
-                    activity.type === 'takedown' ? 'bg-red-500' :
-                    'bg-onerpm-green'
-                  }`}></div>
-                  <div className="flex-1">
-                    <p className="text-gray-900">{activity.message}</p>
-                    <p className="text-sm text-gray-500">{activity.time}</p>
+              {recentActivity.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">No activity yet</p>
+              ) : (
+                recentActivity.map((activity) => (
+                  <div key={activity.id} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg">
+                    <div className={`w-2 h-2 rounded-full mt-2 ${
+                      activity.type === 'release' ? 'bg-onerpm-purple' :
+                      activity.type === 'user' ? 'bg-onerpm-blue' :
+                      activity.type === 'takedown' ? 'bg-red-500' :
+                      'bg-onerpm-green'
+                    }`}></div>
+                    <div className="flex-1">
+                      <p className="text-gray-900">{activity.message}</p>
+                      <p className="text-sm text-gray-500">{formatTime(activity.time)}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
