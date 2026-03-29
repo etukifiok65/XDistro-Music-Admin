@@ -131,7 +131,7 @@ const Login = () => {
                       </FormControl>
                       <div className="space-y-1 leading-none">
                         <FormLabel className="text-sm font-medium text-white/80">
-                          Remember me for 8 hours
+                          Remember me
                         </FormLabel>
                       </div>
                     </FormItem>

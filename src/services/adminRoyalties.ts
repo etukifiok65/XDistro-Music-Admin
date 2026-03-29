@@ -141,15 +141,16 @@ const requestRoyaltyImport = async <T>(mode?: string, init?: RequestInit): Promi
   }
 
   const url = mode ? `${baseUrl}?mode=${encodeURIComponent(mode)}` : baseUrl;
+  const adminToken = getAdminToken();
+  if (!adminToken) {
+    throw new Error("Admin authentication is required.");
+  }
+
   const response = await fetch(url, {
     ...init,
     headers: {
       "Content-Type": "application/json",
-      ...(adminBackendConfig.supabaseAnonKey
-        ? { Authorization: `Bearer ${adminBackendConfig.supabaseAnonKey}`, apikey: adminBackendConfig.supabaseAnonKey }
-        : getAdminToken()
-        ? { Authorization: `Bearer ${getAdminToken()}` }
-        : {}),
+      Authorization: `Bearer ${adminToken}`,
       ...(init?.headers || {}),
     },
   });
