@@ -162,13 +162,8 @@ const Login = () => {
                 </Button>
               </form>
             </Form>
-
-            <div className="mt-8 text-center">
-              <img 
-                src="/assets/xdistrologo.png" 
-                alt="XDistro Music"
-                className="h-16 mx-auto"
-              />
+            <div className="mt-8 text-center mb-4">
+              <p className="text-white/70">Don't have an account? Please contact the system administrator.</p>
             </div>
           </div>
         </div>
