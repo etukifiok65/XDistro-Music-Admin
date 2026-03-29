@@ -4,6 +4,8 @@ import {
   getAdminUsers,
   updateAdminUserPlan,
   updateAdminUserStatus,
+  updateAdminUserDetails,
+  AdminUserDetailsUpdate,
 } from "@/services/adminUsers";
 import { AdminEntityId, SubscriptionPlanName } from "@/types/admin";
 
@@ -46,6 +48,17 @@ export const useUpdateAdminUserStatus = () => {
   return useMutation({
     mutationFn: ({ userId, status }: { userId: AdminEntityId; status: string }) =>
       updateAdminUserStatus(userId, status),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: adminUsersQueryKey });
+    },
+  });
+};
+export const useUpdateAdminUserDetails = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, details }: { userId: AdminEntityId; details: AdminUserDetailsUpdate }) =>
+      updateAdminUserDetails(userId, details),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: adminUsersQueryKey });
     },

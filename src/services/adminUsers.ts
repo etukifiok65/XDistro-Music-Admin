@@ -71,3 +71,20 @@ export const updateAdminUserStatus = async (userId: AdminEntityId, status: strin
     body: JSON.stringify({ status }),
   });
 };
+export type AdminUserDetailsUpdate = Pick<AdminUserListItem, 'firstName' | 'lastName' | 'email' | 'country'>;
+export const updateAdminUserDetails = async (userId: AdminEntityId, details: AdminUserDetailsUpdate): Promise<void> => {
+  if (isAdminDataDummyEnabled()) {
+    const users = readStoredUsers().map((user) => (user.id === userId ? { ...user, ...details } : user));
+    writeStoredUsers(users);
+    return;
+  }
+  await requestAdminJson(`/users/${userId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      first_name: details.firstName,
+      last_name: details.lastName,
+      email: details.email,
+      country: details.country,
+    }),
+  });
+};
