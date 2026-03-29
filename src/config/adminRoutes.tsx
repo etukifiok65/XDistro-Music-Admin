@@ -131,14 +131,14 @@ export const adminUserMenuRoutes = adminProtectedRoutes.filter((route) => route.
 
 export const getAdminPageTitle = (path: string): string => {
   if (path === "/login") {
-    return "XDistro Music Admin - Admin Login";
+    return "XDistro Music - Admin Login";
   }
 
   const matchingRoute = adminProtectedRoutes.find((route) => route.path === path);
 
   if (matchingRoute) {
-    return `XDistro Music Admin - ${matchingRoute.title}`;
+    return `XDistro Music - ${matchingRoute.title}`;
   }
 
-  return "XDistro Music Admin - Admin Panel";
+  return "XDistro Music - Admin Panel";
 };
