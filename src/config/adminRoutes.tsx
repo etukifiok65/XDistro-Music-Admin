@@ -1,4 +1,4 @@
-import { Home, Users, Music, UserRound, DollarSign, Settings, TriangleAlert as AlertTriangle } from "lucide-react";
+import { Home, Users, Music, UserRound, DollarSign, Settings, TriangleAlert as AlertTriangle, MessageSquare } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { lazy, type ComponentType, type LazyExoticComponent } from "react";
 import { AdminPermission } from "@/types/admin";
@@ -9,6 +9,7 @@ const AdminReleases = lazy(() => import("@/pages/admin/AdminReleases"));
 const AdminRoyalties = lazy(() => import("@/pages/admin/AdminRoyalties"));
 const AdminRoyaltyRequests = lazy(() => import("@/pages/admin/AdminRoyaltyRequests"));
 const AdminSettings = lazy(() => import("@/pages/admin/AdminSettings"));
+const AdminSupport = lazy(() => import("@/pages/admin/AdminSupport"));
 const AdminTakedownRequests = lazy(() => import("@/pages/admin/AdminTakedownRequests"));
 const AdminUsers = lazy(() => import("@/pages/admin/AdminUsers"));
 
@@ -88,6 +89,15 @@ export const adminProtectedRoutes: AdminRouteConfig[] = [
     showInPrimaryNav: true,
   },
   {
+    path: "/admin/support",
+    title: "Support Requests",
+    label: "Support",
+    icon: MessageSquare,
+    component: AdminSupport,
+    requiredPermission: "support_requests",
+    showInPrimaryNav: true,
+  },
+  {
     path: "/admin/settings",
     title: "System Settings",
     label: "Settings",
@@ -112,8 +122,10 @@ export const prefetchAdminRoutes = (): void => {
   void import("@/pages/admin/AdminRoyalties");
   void import("@/pages/admin/AdminRoyaltyRequests");
   void import("@/pages/admin/AdminTakedownRequests");
+  void import("@/pages/admin/AdminSupport");
   void import("@/pages/admin/AdminSettings");
 };
+
 
 export const adminUserMenuRoutes = adminProtectedRoutes.filter((route) => route.showInUserMenu);
 

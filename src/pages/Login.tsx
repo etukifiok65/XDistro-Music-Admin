@@ -64,7 +64,7 @@ const Login = () => {
       <main className="flex-grow flex items-center justify-center py-16 px-4">
         <div className="w-full max-w-2xl">
           <div className="bg-onerpm-gray-dark/80 backdrop-blur-sm shadow-xl rounded p-8 border border-white/10">
-            <div className="text-center mb-8">
+            <div className="text-center mb-8"> 
               <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
               <p className="text-white/70 mt-2">
                 Sign in to your admin dashboard

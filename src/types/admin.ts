@@ -13,14 +13,15 @@ export type AdminPermission =
   | "royalties"
   | "royalty_requests"
   | "takedown_requests"
+  | "support_requests"
   | "settings";
 
 /** Permissions granted to each role by default. */
 export const ROLE_DEFAULT_PERMISSIONS: Record<AdminRole, AdminPermission[]> = {
-  super_admin: ["dashboard", "users", "releases", "artists", "royalties", "royalty_requests", "takedown_requests", "settings"],
-  admin:        ["dashboard", "users", "releases", "artists", "royalties", "royalty_requests", "takedown_requests", "settings"],
-  manager:      ["dashboard", "users", "releases", "artists", "royalties", "royalty_requests", "takedown_requests"],
-  support_agent:      ["dashboard", "users"],
+  super_admin: ["dashboard", "users", "releases", "artists", "royalties", "royalty_requests", "takedown_requests", "support_requests", "settings"],
+  admin:        ["dashboard", "users", "releases", "artists", "royalties", "royalty_requests", "takedown_requests", "support_requests", "settings"],
+  manager:      ["dashboard", "users", "releases", "artists", "royalties", "royalty_requests", "takedown_requests", "support_requests"],
+  support_agent:      ["dashboard", "users", "support_requests"],
   content_reviewer:   ["dashboard", "releases", "takedown_requests"],
 };
 
@@ -186,6 +187,36 @@ export interface AdminTakedownRequest {
   releaseId: string;
   requestDate: string;
   status: AdminTakedownRequestStatus;
+}
+
+export type AdminSupportTicketStatus = "Open" | "In Progress" | "Resolved" | "Closed";
+
+export interface AdminSupportMessage {
+  id: AdminEntityId;
+  senderType: "User" | "Admin" | "System";
+  senderName: string;
+  senderEmail: string;
+  message: string;
+  emailSent: boolean;
+  createdDate: string;
+  createdAt?: string;
+}
+
+export interface AdminSupportTicket {
+  id: AdminEntityId;
+  ticketNumber: string;
+  contactName: string;
+  contactEmail: string;
+  category: string;
+  subject: string;
+  status: AdminSupportTicketStatus;
+  createdDate: string;
+  lastUpdatedDate: string;
+  lastMessageDate?: string;
+  lastAdminReplyDate?: string;
+  messageCount: number;
+  preview: string;
+  messages?: AdminSupportMessage[];
 }
 
 export type AdminRoyaltyUploadStatus = "Completed" | "Processing" | "Failed";

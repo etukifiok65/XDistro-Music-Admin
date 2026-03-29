@@ -1,14 +1,17 @@
 import { adminBackendConfig, isAdminDummyDataEnabled } from "@/config/adminBackend";
 import { getAdminToken } from "@/lib/adminSession";
+import { getStoredAdminUser } from "@/lib/adminSession";
 
 export const isAdminDataDummyEnabled = () => isAdminDummyDataEnabled();
 
 export const requestAdminJson = async <T>(path: string, init?: RequestInit): Promise<T> => {
+  const adminUser = getStoredAdminUser();
   const response = await fetch(`${adminBackendConfig.apiBaseUrl}${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",
       ...(getAdminToken() ? { Authorization: `Bearer ${getAdminToken()}` } : {}),
+      ...(adminUser?.email ? { "x-admin-email": adminUser.email } : {}),
       ...(init?.headers || {}),
     },
   });
