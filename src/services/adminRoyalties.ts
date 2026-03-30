@@ -1,7 +1,12 @@
 import { adminBackendConfig } from "@/config/adminBackend";
 import { mockAdminRoyaltyStats, mockAdminRoyaltyUploadHistory } from "@/data/adminRoyalties";
 import { getAdminToken } from "@/lib/adminSession";
-import { AdminRoyaltyStats, AdminRoyaltyUploadHistoryItem, AdminRoyaltyUploadInput } from "@/types/admin";
+import {
+  AdminRoyaltyNormalizationSummary,
+  AdminRoyaltyStats,
+  AdminRoyaltyUploadHistoryItem,
+  AdminRoyaltyUploadInput,
+} from "@/types/admin";
 import { isAdminDataDummyEnabled, requestAdminJson } from "@/services/adminClient";
 
 const ADMIN_ROYALTY_HISTORY_KEY = "admin:royalty-upload-history";
@@ -309,6 +314,39 @@ export const runAdminRoyaltyRetentionCleanup = async (
 
   if (!payload.data) {
     throw new Error("Cleanup summary was not returned.");
+  }
+
+  return payload.data;
+};
+
+export const runAdminRoyaltyImportNormalization = async (): Promise<AdminRoyaltyNormalizationSummary> => {
+  if (isAdminDataDummyEnabled()) {
+    return {
+      normalizedAt: new Date().toISOString(),
+      batchesScanned: 0,
+      batchesUpdated: 0,
+      unmatchedRowsDeleted: 0,
+      allocationFailedRowsDeleted: 0,
+      matchedRowsRetained: 0,
+      replacedRowsRetained: 0,
+      totalMatchedAmount: 0,
+      periodsTouched: [],
+    };
+  }
+
+  if (!adminBackendConfig.royaltyImportUrl) {
+    throw new Error("VITE_ADMIN_ROYALTY_IMPORT_URL is not configured.");
+  }
+
+  const payload = await requestRoyaltyImport<{ data?: AdminRoyaltyNormalizationSummary }>(undefined, {
+    method: "POST",
+    body: JSON.stringify({
+      mode: "normalize-imports",
+    }),
+  });
+
+  if (!payload.data) {
+    throw new Error("Normalization summary was not returned.");
   }
 
   return payload.data;

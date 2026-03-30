@@ -245,3 +245,15 @@ export interface AdminRoyaltyStats {
   pendingDistribution: number;
   totalArtists: number;
 }
+
+export interface AdminRoyaltyNormalizationSummary {
+  normalizedAt: string;
+  batchesScanned: number;
+  batchesUpdated: number;
+  unmatchedRowsDeleted: number;
+  allocationFailedRowsDeleted: number;
+  matchedRowsRetained: number;
+  replacedRowsRetained: number;
+  totalMatchedAmount: number;
+  periodsTouched: string[];
+}

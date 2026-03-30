@@ -189,6 +189,7 @@ USRC17607841,Mike Wilson,Rock Anthem,12.45,USD,2024-02`;
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total Distributed</p>
+                <p className="text-xs text-gray-500">Matched tracks only</p>
                 <p className="text-2xl font-bold text-gray-900">${(royaltyStats?.totalDistributed || 0).toLocaleString()}</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -230,6 +231,9 @@ USRC17607841,Mike Wilson,Rock Anthem,12.45,USD,2024-02`;
       <Card className="mb-8">
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Upload Monthly Royalties</h3>
+          <p className="text-sm text-gray-600 mb-6">
+            Only royalty lines that match tracks already in the system are stored and counted toward distribution totals. Unmatched rows are discarded after they are counted for audit summary.
+          </p>
 
           <div className="grid gap-6 md:grid-cols-2">
             <div>
@@ -312,15 +316,19 @@ USRC17607841,Mike Wilson,Rock Anthem,12.45,USD,2024-02`;
                 <li>• Required columns: ISRC, Track, Artists, Release, Label, Royalty Total</li>
                 <li>• Select the reporting month before upload</li>
                 <li>• ISRC codes must match existing releases</li>
-                <li>• Artist and track names are stored for audit but matching is done by ISRC</li>
+                <li>• Matching is done by ISRC; unmatched rows are discarded from stored import data</li>
                 <li>• Royalty amounts should be in decimal format (e.g., 25.67)</li>
               </ul>
 
-              <Button variant="outline" onClick={downloadTemplate} className="w-full">
-                <Download className="w-4 h-4 mr-2" />
-                Download CSV Template
-              </Button>
+              <div>
+                <Button variant="outline" onClick={downloadTemplate} className="w-full">
+                  <Download className="w-4 h-4 mr-2" />
+                  Download CSV Template
+                </Button>
+                <p className="text-xs text-gray-500 mt-1 px-1">Get a sample CSV with the correct column headers to use as a starting point for your upload.</p>
+              </div>
 
+              <div>
               <Button
                 variant="outline"
                 onClick={handleResyncPeriod}
@@ -329,7 +337,10 @@ USRC17607841,Mike Wilson,Rock Anthem,12.45,USD,2024-02`;
               >
                 {isResyncing ? "Re-syncing..." : "Re-sync Selected Period"}
               </Button>
+              <p className="text-xs text-gray-500 mt-1 px-1">Recalculates wallet balances for the selected month by re-applying all matched import rows for that period.</p>
+              </div>
 
+              <div>
               <Button
                 variant="outline"
                 onClick={() => handleRetentionCleanup(true)}
@@ -338,7 +349,10 @@ USRC17607841,Mike Wilson,Rock Anthem,12.45,USD,2024-02`;
               >
                 {isRunningRetentionCleanup ? "Running Preview..." : "Preview Retention Cleanup"}
               </Button>
+              <p className="text-xs text-gray-500 mt-1 px-1">Dry run — shows how many old report archives and orphan track files would be deleted without actually removing anything.</p>
+              </div>
 
+              <div>
               <Button
                 variant="outline"
                 onClick={() => handleRetentionCleanup(false)}
@@ -347,6 +361,8 @@ USRC17607841,Mike Wilson,Rock Anthem,12.45,USD,2024-02`;
               >
                 {isRunningRetentionCleanup ? "Applying Cleanup..." : "Apply Retention Cleanup"}
               </Button>
+              <p className="text-xs text-gray-500 mt-1 px-1">Permanently deletes report archives and orphan track storage files that exceed the configured retention period.</p>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -447,6 +463,7 @@ USRC17607841,Mike Wilson,Rock Anthem,12.45,USD,2024-02`;
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       ${upload.totalAmount.toLocaleString()}
+                      <div className="text-xs text-gray-500">Matched total only</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Badge className={getStatusColor(upload.status)}>
