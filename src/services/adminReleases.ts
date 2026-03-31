@@ -17,6 +17,13 @@ const readStoredReleases = (): AdminRelease[] => {
       return mockAdminReleases;
     }
 
+    // Re-seed if stored data is missing fields added in newer mock versions
+    const isStale = parsed.some((r) => r.copyrightYear === undefined);
+    if (isStale) {
+      localStorage.setItem(ADMIN_RELEASES_KEY, JSON.stringify(mockAdminReleases));
+      return mockAdminReleases;
+    }
+
     return parsed;
   } catch {
     return mockAdminReleases;
