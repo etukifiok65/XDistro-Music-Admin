@@ -107,6 +107,7 @@ export interface AdminRelease {
   coverArt?: string;
   label?: string;
   copyright?: string;
+  copyrightYear?: string;
   language?: string;
   trackList?: AdminReleaseTrack[];
 }

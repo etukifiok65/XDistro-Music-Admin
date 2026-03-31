@@ -15,7 +15,8 @@ export const mockAdminReleases: AdminRelease[] = [
     upc: "",
     coverArt: "https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=300",
     label: "Independent",
-    copyright: "2024 John Doe",
+    copyright: "John Doe",
+    copyrightYear: "2024",
     language: "English",
     trackList: [
       {
@@ -47,7 +48,8 @@ export const mockAdminReleases: AdminRelease[] = [
     upc: "123456789013",
     coverArt: "https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=300",
     label: "Neon Records",
-    copyright: "2024 Jane Smith",
+    copyright: "Jane Smith",
+    copyrightYear: "2024",
     language: "English",
     trackList: [
       {
@@ -105,7 +107,8 @@ export const mockAdminReleases: AdminRelease[] = [
     upc: "123456789014",
     coverArt: "https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=300",
     label: "Rock Solid Records",
-    copyright: "2024 Mike Wilson",
+    copyright: "Mike Wilson",
+    copyrightYear: "2024",
     language: "English",
     trackList: [
       {
@@ -137,7 +140,8 @@ export const mockAdminReleases: AdminRelease[] = [
     upc: "123456789015",
     coverArt: "https://images.pexels.com/photos/1751731/pexels-photo-1751731.jpeg?auto=compress&cs=tinysrgb&w=300",
     label: "Folk Tales Music",
-    copyright: "2024 Sarah Johnson",
+    copyright: "Sarah Johnson",
+    copyrightYear: "2024",
     language: "English",
     trackList: [
       {
@@ -182,7 +186,8 @@ export const mockAdminReleases: AdminRelease[] = [
     upc: "190387465763",
     coverArt: "https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=300",
     label: "Independent",
-    copyright: "2024 Sam Doe",
+    copyright: "Sam Doe",
+    copyrightYear: "2024",
     language: "English",
     trackList: [
       {

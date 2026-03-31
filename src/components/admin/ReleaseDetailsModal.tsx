@@ -57,6 +57,7 @@ interface Release {
   coverArt?: string;
   label?: string;
   copyright?: string;
+  copyrightYear?: string;
   language?: string;
   trackList?: Track[];
   distributionPlatforms?: string[];
@@ -774,8 +775,11 @@ const ReleaseDetailsModal = ({
                   <p className="font-medium text-gray-700 mb-1">Label:</p>
                   <p className="text-gray-600 mb-3">{release.label || "Independent"}</p>
 
-                  <p className="font-medium text-gray-700 mb-1">Copyright:</p>
-                  <p className="text-gray-600 mb-3">{release.copyright || `© 2024 ${release.artist}`}</p>
+                  <p className="font-medium text-gray-700 mb-1">Copyright Holder:</p>
+                  <p className="text-gray-600 mb-3">{release.copyright || release.artist}</p>
+
+                  <p className="font-medium text-gray-700 mb-1">Copyright Year:</p>
+                  <p className="text-gray-600 mb-3">{release.copyrightYear || "—"}</p>
                 </div>
 
                 <div>
