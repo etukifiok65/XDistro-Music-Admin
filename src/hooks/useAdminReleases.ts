@@ -22,8 +22,15 @@ export const useUpdateAdminReleaseStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ releaseId, status }: { releaseId: AdminEntityId; status: AdminReleaseStatus }) =>
-      updateAdminReleaseStatus(releaseId, status),
+    mutationFn: ({
+      releaseId,
+      status,
+      reason,
+    }: {
+      releaseId: AdminEntityId;
+      status: AdminReleaseStatus;
+      reason?: string;
+    }) => updateAdminReleaseStatus(releaseId, status, reason),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: adminReleasesQueryKey });
     },

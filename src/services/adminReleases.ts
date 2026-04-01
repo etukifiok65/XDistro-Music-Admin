@@ -265,7 +265,8 @@ export const getAdminReleases = async (): Promise<AdminRelease[]> => {
 
 export const updateAdminReleaseStatus = async (
   releaseId: AdminRelease["id"],
-  status: AdminReleaseStatus
+  status: AdminReleaseStatus,
+  reason?: string
 ): Promise<void> => {
   if (isAdminDataDummyEnabled()) {
     const updated = readStoredReleases().map((release) =>
@@ -277,7 +278,10 @@ export const updateAdminReleaseStatus = async (
 
   await requestAdminJson(`/releases/${releaseId}/status`, {
     method: "PATCH",
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({
+      status,
+      ...(reason ? { reason } : {}),
+    }),
   });
 };
 

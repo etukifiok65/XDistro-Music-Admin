@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ChevronLeft, ChevronRight, Search, Eye, Check, X, Clock } from "lucide-react";
 import { toast } from "@/lib/toast";
 import AdminPageLayout from "@/components/admin/AdminPageLayout";
@@ -34,6 +35,8 @@ const AdminReleases = () => {
   const [selectedReleaseId, setSelectedReleaseId] = useState<AdminEntityId | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [rejectionTargetRelease, setRejectionTargetRelease] = useState<AdminRelease | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
 
   const { data: releases = [], isLoading } = useAdminReleases();
   const updateStatusMutation = useUpdateAdminReleaseStatus();
@@ -107,9 +110,55 @@ const AdminReleases = () => {
     }
   };
 
-  const handleStatusUpdate = async (releaseId: AdminEntityId, newStatus: AdminReleaseStatus) => {
-    await updateStatusMutation.mutateAsync({ releaseId, status: newStatus });
+  const handleStatusUpdate = async (
+    releaseId: AdminEntityId,
+    newStatus: AdminReleaseStatus,
+    reason?: string
+  ) => {
+    await updateStatusMutation.mutateAsync({
+      releaseId,
+      status: newStatus,
+      ...(reason ? { reason } : {}),
+    });
     toast.success(`Release status updated to ${newStatus}`);
+  };
+
+  const handleStatusSelection = async (release: AdminRelease, newStatus: AdminReleaseStatus) => {
+    if (newStatus === release.status) {
+      return;
+    }
+
+    if (newStatus === "Rejected") {
+      setRejectionTargetRelease(release);
+      setRejectionReason("");
+      return;
+    }
+
+    await handleStatusUpdate(release.id, newStatus);
+  };
+
+  const handleCloseRejectionModal = () => {
+    if (updateStatusMutation.isPending) {
+      return;
+    }
+
+    setRejectionTargetRelease(null);
+    setRejectionReason("");
+  };
+
+  const handleConfirmRejection = async () => {
+    if (!rejectionTargetRelease) {
+      return;
+    }
+
+    const trimmedReason = rejectionReason.trim();
+    if (!trimmedReason) {
+      toast.error("Rejection reason is required.");
+      return;
+    }
+
+    await handleStatusUpdate(rejectionTargetRelease.id, "Rejected", trimmedReason);
+    handleCloseRejectionModal();
   };
 
   const handleUpcUpdate = async (releaseId: AdminEntityId, upc: string) => {
@@ -245,10 +294,11 @@ const AdminReleases = () => {
                         </Button>
                         <select
                           value={release.status}
-                          onChange={(e) => void handleStatusUpdate(release.id, e.target.value as AdminReleaseStatus)}
+                          onChange={(e) => void handleStatusSelection(release, e.target.value as AdminReleaseStatus)}
                           aria-label={`Update release status for ${release.title}`}
                           title={`Update release status for ${release.title}`}
                           className="text-xs border border-gray-300 rounded px-2 py-1"
+                          disabled={updateStatusMutation.isPending}
                         >
                           <option value="Submitted">Pending Review</option>
                           <option value="Approved">Approved</option>
@@ -386,9 +436,13 @@ const AdminReleases = () => {
         release={selectedRelease}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        onStatusUpdate={(releaseId, newStatus) =>
-          void handleStatusUpdate(releaseId, newStatus as AdminReleaseStatus)
-        }
+        onStatusUpdate={(releaseId, newStatus) => {
+          const targetRelease = releases.find((release) => release.id === releaseId);
+          if (!targetRelease) {
+            return;
+          }
+          void handleStatusSelection(targetRelease, newStatus as AdminReleaseStatus);
+        }}
         onUpcUpdate={(releaseId, upc) => void handleUpcUpdate(releaseId, upc)}
         onIsrcUpdate={(releaseId, trackId, isrc) =>
           void handleTrackIsrcUpdate(releaseId, trackId, isrc)
@@ -397,6 +451,55 @@ const AdminReleases = () => {
           void handleTikTokPreviewUpdate(releaseId, trackId, minutes, seconds)
         }
       />
+
+      <Dialog
+        open={Boolean(rejectionTargetRelease)}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleCloseRejectionModal();
+          }
+        }}
+      >
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Reject Release</DialogTitle>
+            <DialogDescription>
+              Add a clear reason for rejecting "{rejectionTargetRelease?.title}". This message will be sent to the artist by email.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <label htmlFor="rejection-reason" className="text-sm font-medium text-gray-700">
+              Rejection reason
+            </label>
+            <textarea
+              id="rejection-reason"
+              value={rejectionReason}
+              onChange={(event) => setRejectionReason(event.target.value)}
+              rows={6}
+              placeholder="Explain what must be fixed before resubmission..."
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-onerpm-orange focus:border-transparent"
+            />
+          </div>
+
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={handleCloseRejectionModal}
+              disabled={updateStatusMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-onerpm-orange hover:bg-onerpm-orange/90 text-white"
+              onClick={() => void handleConfirmRejection()}
+              disabled={updateStatusMutation.isPending || rejectionReason.trim().length === 0}
+            >
+              {updateStatusMutation.isPending ? "Saving..." : "Reject"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AdminPageLayout>
   );
 };
