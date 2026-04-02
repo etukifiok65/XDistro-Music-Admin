@@ -140,7 +140,7 @@ export default function AcceptAdminInvite() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-2xl">
         <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl overflow-hidden">
           <div className="bg-gradient-to-r from-slate-700 to-slate-600 px-8 py-12 text-center">
             <div className="inline-block p-3 bg-onerpm-orange/20 rounded-lg mb-4">
