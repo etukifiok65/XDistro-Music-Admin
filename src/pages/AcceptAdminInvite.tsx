@@ -90,22 +90,44 @@ export default function AcceptAdminInvite() {
     setIsLoading(true);
 
     try {
-      const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-      const response = await fetch(
-        `${SUPABASE_URL}/functions/v1/accept-admin-invite`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            token,
-            password,
-          }),
-        }
-      );
+      const supabaseUrl =
+        import.meta.env.VITE_SUPABASE_URL ||
+        import.meta.env.VITE_ADMIN_SUPABASE_URL ||
+        "https://iqaobvncpxmlgpllmiyf.supabase.co";
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-      const data = await response.json();
+      if (!supabaseUrl) {
+        setError("Invite service is not configured. Please contact support.");
+        return;
+      }
+
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (supabaseAnonKey) {
+        headers.apikey = supabaseAnonKey;
+        headers.Authorization = `Bearer ${supabaseAnonKey}`;
+      }
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/accept-admin-invite`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          token,
+          password,
+        }),
+      });
+
+      const responseText = await response.text();
+      let data: { message?: string } = {};
+      if (responseText) {
+        try {
+          data = JSON.parse(responseText) as { message?: string };
+        } catch {
+          data = { message: responseText };
+        }
+      }
 
       if (!response.ok) {
         if (response.status === 404) {
@@ -132,7 +154,7 @@ export default function AcceptAdminInvite() {
       }, 2000);
     } catch (err) {
       console.error("Error accepting invitation:", err);
-      setError("An unexpected error occurred. Please try again.");
+      setError(err instanceof Error ? err.message : "An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
