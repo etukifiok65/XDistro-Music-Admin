@@ -50,6 +50,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Navigate to="/admin" replace />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/accept-invite" element={<AcceptAdminInvite />} />
             <Route path="/admin/accept-invite" element={<AcceptAdminInvite />} />
             <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}>
               {adminProtectedRoutes.map(({ path, component: Component }) => (
