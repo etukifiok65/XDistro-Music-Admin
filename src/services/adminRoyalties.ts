@@ -250,30 +250,6 @@ export const uploadAdminRoyaltyFile = async (
   });
 };
 
-export const resyncAdminRoyaltyPeriod = async (period: string): Promise<string[]> => {
-  if (!/^\d{4}-\d{2}$/.test(period)) {
-    throw new Error("Please select a valid reporting month and year.");
-  }
-
-  if (isAdminDataDummyEnabled()) {
-    return [period];
-  }
-
-  if (!adminBackendConfig.royaltyImportUrl) {
-    throw new Error("VITE_ADMIN_ROYALTY_IMPORT_URL is not configured.");
-  }
-
-  const payload = await requestRoyaltyImport<{ data?: { periods?: string[] } }>(undefined, {
-    method: "POST",
-    body: JSON.stringify({
-      mode: "resync",
-      period,
-    }),
-  });
-
-  return payload.data?.periods ?? [period];
-};
-
 export type AdminRoyaltyRetentionCleanupSummary = {
   dryRun: boolean;
   reportArchives: {

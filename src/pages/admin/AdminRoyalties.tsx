@@ -8,7 +8,6 @@ import AdminPageLayout from "@/components/admin/AdminPageLayout";
 import AdminPageLoader from "@/components/admin/AdminPageLoader";
 import { AdminRoyaltyRetentionCleanupSummary } from "@/services/adminRoyalties";
 import {
-  useResyncAdminRoyaltyPeriod,
   useRunAdminRoyaltyRetentionCleanup,
   useAdminRoyaltyStats,
   useAdminRoyaltyUploadHistory,
@@ -27,10 +26,8 @@ const AdminRoyalties = () => {
   const { data: royaltyStats, isLoading: isStatsLoading } = useAdminRoyaltyStats();
   const { data: uploadHistory = [], isLoading: isUploadHistoryLoading } = useAdminRoyaltyUploadHistory();
   const uploadRoyaltyFileMutation = useUploadAdminRoyaltyFile();
-  const resyncRoyaltyPeriodMutation = useResyncAdminRoyaltyPeriod();
   const retentionCleanupMutation = useRunAdminRoyaltyRetentionCleanup();
   const isProcessing = uploadRoyaltyFileMutation.isPending;
-  const isResyncing = resyncRoyaltyPeriodMutation.isPending;
   const isRunningRetentionCleanup = retentionCleanupMutation.isPending;
   const isLoading = isStatsLoading || isUploadHistoryLoading;
 
@@ -104,21 +101,6 @@ const AdminRoyalties = () => {
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-    }
-  };
-
-  const handleResyncPeriod = async () => {
-    const period = `${selectedYear}-${selectedMonth}`;
-    if (!/^\d{4}-\d{2}$/.test(period)) {
-      toast.error("Please select a valid reporting month and year.");
-      return;
-    }
-
-    try {
-      const periods = await resyncRoyaltyPeriodMutation.mutateAsync(period);
-      toast.success(`Re-sync completed for ${periods.join(", ")}`);
-    } catch (error) {
-      toast.error((error as Error).message || "Failed to re-sync the selected period.");
     }
   };
 
@@ -331,21 +313,9 @@ USRC17607841,Mike Wilson,Rock Anthem,12.45,USD,2025-12,Spotify,NGA,Single,Sale,4
               <div>
               <Button
                 variant="outline"
-                onClick={handleResyncPeriod}
-                className="w-full"
-                disabled={isResyncing || isProcessing}
-              >
-                {isResyncing ? "Re-syncing..." : "Re-sync Selected Period"}
-              </Button>
-              <p className="text-xs text-gray-500 mt-1 px-1">Recalculates wallet balances for the selected month by re-applying all matched import rows for that period.</p>
-              </div>
-
-              <div>
-              <Button
-                variant="outline"
                 onClick={() => handleRetentionCleanup(true)}
                 className="w-full"
-                disabled={isRunningRetentionCleanup || isProcessing || isResyncing}
+                disabled={isRunningRetentionCleanup || isProcessing}
               >
                 {isRunningRetentionCleanup ? "Running Preview..." : "Preview Retention Cleanup"}
               </Button>
@@ -357,7 +327,7 @@ USRC17607841,Mike Wilson,Rock Anthem,12.45,USD,2025-12,Spotify,NGA,Single,Sale,4
                 variant="outline"
                 onClick={() => handleRetentionCleanup(false)}
                 className="w-full"
-                disabled={isRunningRetentionCleanup || isProcessing || isResyncing}
+                disabled={isRunningRetentionCleanup || isProcessing}
               >
                 {isRunningRetentionCleanup ? "Applying Cleanup..." : "Apply Retention Cleanup"}
               </Button>
